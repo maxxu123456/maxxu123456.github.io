@@ -258,8 +258,8 @@ a:hover {
         font-size: 14px;
     }
     .page {
-        /* Account for the tab bar height + bottom safe-area at the bottom. */
-        padding: 24px 12px calc(64px + env(safe-area-inset-bottom)) 12px;
+        /* No tab bar on mobile, so trim bottom padding to just the safe area. */
+        padding: 16px 12px calc(16px + env(safe-area-inset-bottom)) 12px;
     }
     .container {
         padding: 20px 20px 18px;
@@ -281,22 +281,15 @@ a:hover {
     }
     .social-links .link {
         font-size: 14px;
-        padding: 4px 0; /* easier to tap */
+        padding: 4px 0;
     }
     .ascii-pane pre {
-        font-size: 8px;
-        line-height: 8px;
+        font-size: 9px;
+        line-height: 9px;
     }
+    /* Hide the animation picker on phones — pick is random on load. */
     .anim-tabs {
-        bottom: calc(12px + env(safe-area-inset-bottom));
-        max-width: calc(100vw - 16px);
-        padding: 5px;
-        gap: 3px;
-    }
-    .anim-tabs button {
-        padding: 9px 14px;
-        font-size: 12px;
-        min-height: 36px;
+        display: none;
     }
 }
 

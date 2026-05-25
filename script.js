@@ -47,23 +47,41 @@
   if (!asciiEl) return;
 
   const RAMP = " .,:;-=+*o#%@";
-  const CELL_W = 5;
-  const CELL_H = 9;
-  // Aspect correction: cells are ~5×9 px, so y-distances need scaling to
-  // look round in physical pixels.
-  const AY = CELL_H / CELL_W; // ≈ 1.8
+
+  // Measure the actual rendered cell size from the DOM so the ASCII grid
+  // matches whatever font-size/line-height the CSS applies (different on
+  // mobile vs desktop). Hard-coded values caused the <pre> to be shorter
+  // than the viewport on mobile.
+  let CELL_W = 5, CELL_H = 9, AY = 1.8;
+  function measureCell() {
+    const sample = document.createElement("span");
+    sample.style.cssText =
+      "visibility:hidden;white-space:pre;position:absolute;font:inherit;";
+    sample.textContent = "0\n0\n0\n0\n0\n0\n0\n0\n0\n0"; // 10 lines × 1 char
+    asciiEl.appendChild(sample);
+    const r = sample.getBoundingClientRect();
+    asciiEl.removeChild(sample);
+    if (r.width > 0 && r.height > 0) {
+      CELL_W = r.width;            // one character wide
+      CELL_H = r.height / 10;      // one line tall (averaged over 10)
+      AY = CELL_H / CELL_W;
+    }
+  }
 
   let cols = 0, rows = 0, t = 0;
 
   function resize() {
+    measureCell();
     // The ASCII pane is sized to 100lvh in CSS, so use the pane's actual
     // box rather than window.innerHeight — innerHeight changes as the iOS
     // Safari address bar collapses, but the pane does not.
     const paneRect = asciiEl.parentElement.getBoundingClientRect();
     const w = paneRect.width || window.innerWidth;
     const h = paneRect.height || window.innerHeight;
-    cols = Math.max(40, Math.floor(w / CELL_W));
-    rows = Math.max(20, Math.floor(h / CELL_H));
+    // Add one extra row/col so the grid rounds up past the viewport edge
+    // rather than leaving a bare strip when font metrics don't divide cleanly.
+    cols = Math.max(40, Math.ceil(w / CELL_W));
+    rows = Math.max(20, Math.ceil(h / CELL_H));
   }
   resize();
   // Debounce so rapid viewport changes (e.g. iOS address bar collapsing)
