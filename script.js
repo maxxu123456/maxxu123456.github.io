@@ -70,24 +70,42 @@
 
   let cols = 0, rows = 0, t = 0;
 
+  // Lock the page wrapper to the actual visible viewport height at load,
+  // exposed as --page-h in CSS. This bypasses Safari's svh/dvh quirks so
+  // the card centers in exactly the visible area — no scroll when it fits.
+  function setPageHeight() {
+    document.documentElement.style.setProperty(
+      "--page-h",
+      `${window.innerHeight}px`
+    );
+  }
+  setPageHeight();
+
   function resize() {
     measureCell();
-    // The ASCII pane is sized to 100lvh in CSS, so use the pane's actual
-    // box rather than window.innerHeight — innerHeight changes as the iOS
-    // Safari address bar collapses, but the pane does not.
     const paneRect = asciiEl.parentElement.getBoundingClientRect();
     const w = paneRect.width || window.innerWidth;
     const h = paneRect.height || window.innerHeight;
-    // Add one extra row/col so the grid rounds up past the viewport edge
-    // rather than leaving a bare strip when font metrics don't divide cleanly.
-    cols = Math.max(40, Math.ceil(w / CELL_W));
-    rows = Math.max(20, Math.ceil(h / CELL_H));
+    // Overshoot by one cell so the grid always extends past the viewport
+    // edge. The pane has overflow:hidden so extras are cropped.
+    cols = Math.max(40, Math.ceil(w / CELL_W) + 1);
+    rows = Math.max(20, Math.ceil(h / CELL_H) + 1);
   }
   resize();
-  // Debounce so rapid viewport changes (e.g. iOS address bar collapsing)
-  // don't trigger a grid recompute every event.
+
+  // Only react to genuine size changes — width deltas or orientation
+  // flips — not to iOS Safari's address bar collapsing (which produces a
+  // small height-only delta and would otherwise shift the pattern).
+  let lastW = window.innerWidth;
+  let lastH = window.innerHeight;
   let resizeT = null;
   window.addEventListener("resize", () => {
+    const w = window.innerWidth, h = window.innerHeight;
+    const widthChanged = Math.abs(w - lastW) > 1;
+    const bigHeightChange = Math.abs(h - lastH) > 150; // orientation flip
+    if (!widthChanged && !bigHeightChange) return;
+    lastW = w; lastH = h;
+    setPageHeight();
     clearTimeout(resizeT);
     resizeT = setTimeout(resize, 180);
   });
