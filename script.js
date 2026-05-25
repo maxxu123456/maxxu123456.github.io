@@ -56,11 +56,23 @@
   let cols = 0, rows = 0, t = 0;
 
   function resize() {
-    cols = Math.max(40, Math.floor(window.innerWidth / CELL_W));
-    rows = Math.max(20, Math.floor(window.innerHeight / CELL_H));
+    // The ASCII pane is sized to 100lvh in CSS, so use the pane's actual
+    // box rather than window.innerHeight — innerHeight changes as the iOS
+    // Safari address bar collapses, but the pane does not.
+    const paneRect = asciiEl.parentElement.getBoundingClientRect();
+    const w = paneRect.width || window.innerWidth;
+    const h = paneRect.height || window.innerHeight;
+    cols = Math.max(40, Math.floor(w / CELL_W));
+    rows = Math.max(20, Math.floor(h / CELL_H));
   }
   resize();
-  window.addEventListener("resize", resize);
+  // Debounce so rapid viewport changes (e.g. iOS address bar collapsing)
+  // don't trigger a grid recompute every event.
+  let resizeT = null;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeT);
+    resizeT = setTimeout(resize, 180);
+  });
 
   /* ===================================================================
    * Animations. Each returns a value in roughly [0, 1].

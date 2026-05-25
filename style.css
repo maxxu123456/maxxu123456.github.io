@@ -57,11 +57,11 @@
     margin: 0;
     padding: 0;
 }
-html,
-body {
+html {
     height: 100%;
 }
 body {
+    min-height: 100svh;
     background: var(--bg);
     color: var(--fg);
     font-family:
@@ -89,7 +89,15 @@ a:hover {
 /* ---------- ASCII background pane ---------- */
 .ascii-pane {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* lvh = "large viewport height" — always the maximum the viewport can
+       reach (i.e. with the iOS address bar hidden). This keeps the pane
+       size constant as the bar collapses/expands, so the ASCII grid
+       doesn't reflow and the pattern doesn't appear to move on scroll. */
+    height: 100vh;
+    height: 100lvh;
     pointer-events: none;
     z-index: 0;
     display: flex;
@@ -110,8 +118,11 @@ a:hover {
 .page {
     position: relative;
     z-index: 1;
+    /* svh = "small viewport height" — the size with the iOS address bar
+       visible. Treating this as a constant means the card centers stably
+       and the layout doesn't shift when the bar collapses on scroll. */
     min-height: 100vh;
-    min-height: 100dvh;
+    min-height: 100svh;
     display: flex;
     align-items: center;
     justify-content: center;
