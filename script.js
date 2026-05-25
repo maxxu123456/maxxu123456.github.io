@@ -76,19 +76,7 @@
     return (wave + slow + 1.55) / 3.1;
   }
 
-  // 2. Waves — two-source interference (Young's double-slit / pond ripples).
-  function waves(x, y, t, cols, rows) {
-    const cx1 = cols * 0.32, cy1 = rows * 0.5;
-    const cx2 = cols * 0.68, cy2 = rows * 0.5;
-    const d1 = Math.hypot(x - cx1, (y - cy1) * AY);
-    const d2 = Math.hypot(x - cx2, (y - cy2) * AY);
-    const k = 0.32;
-    const w = Math.sin(d1 * k - t * 2.4) + Math.sin(d2 * k - t * 2.4);
-    // Sharpen with tanh so crests and troughs are crisp.
-    return Math.tanh(w * 1.6) * 0.5 + 0.5;
-  }
-
-  // 3. Galaxy — logarithmic spiral arms rotating about the center.
+  // 2. Galaxy — logarithmic spiral arms rotating about the center.
   function galaxy(x, y, t, cols, rows) {
     const dx = x - cols / 2;
     const dy = (y - rows / 2) * AY;
@@ -147,7 +135,6 @@
   /* ---------- Registry ---------- */
   const ANIMATIONS = {
     flow,    // diagonal flowing field
-    waves,   // two-source interference
     galaxy,  // log-spiral arms
     dipole,  // magnetic field lines
     plasma,  // turbulent EM field
