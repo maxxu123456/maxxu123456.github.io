@@ -35,7 +35,7 @@
     --muted: #888888;
     --accent: #2a2a2a;
     --ascii: rgba(0, 0, 0, 0.6);
-    --card-bg: rgba(255, 255, 255, 0.55);
+    --card-bg: rgba(255, 255, 255, 0.4);
     --card-border: rgba(0, 0, 0, 0.08);
 }
 @media (prefers-color-scheme: dark) {
@@ -46,7 +46,7 @@
         --muted: #777777;
         --accent: #d6d6d6;
         --ascii: rgba(255, 255, 255, 0.7);
-        --card-bg: rgba(20, 20, 20, 0.55);
+        --card-bg: rgba(20, 20, 20, 0.4);
         --card-border: rgba(255, 255, 255, 0.08);
     }
 }
