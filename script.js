@@ -117,45 +117,52 @@
     return (v1 + v2 + v3 + v4 + 4) / 8;
   }
 
-  // 6. Vortex — fluid rotating around a moving eye (Kármán-style).
-  function vortex(x, y, t, cols, rows) {
-    const cx = cols / 2 + Math.cos(t * 0.3) * cols * 0.08;
-    const cy = rows / 2 + Math.sin(t * 0.4) * rows * 0.08;
-    const dx = x - cx;
-    const dy = (y - cy) * AY;
-    const r = Math.hypot(dx, dy) + 1;
-    const theta = Math.atan2(dy, dx);
-    // Tangential phase + radial wavelength — concentric rotating arms.
-    const phase = theta * 3 + r * 0.18 - t * 1.2;
-    const wave = Math.sin(phase);
-    const decay = 1 - Math.min(1, r * 0.015);
-    return (wave * (0.5 + decay * 0.5) + 1) / 2;
-  }
-
   /* ---------- Registry ---------- */
   const ANIMATIONS = {
     flow,    // diagonal flowing field
     galaxy,  // log-spiral arms
     dipole,  // magnetic field lines
     plasma,  // turbulent EM field
-    vortex,  // rotating fluid
   };
 
   // Pick animation: ?anim=name in URL wins, else random.
-  function pickAnimation() {
+  function pickInitial() {
     const q = new URLSearchParams(location.search).get("anim");
-    if (q && ANIMATIONS[q]) return [q, ANIMATIONS[q]];
+    if (q && ANIMATIONS[q]) return q;
     const keys = Object.keys(ANIMATIONS);
-    const k = keys[Math.floor(Math.random() * keys.length)];
-    return [k, ANIMATIONS[k]];
+    return keys[Math.floor(Math.random() * keys.length)];
   }
 
-  const [animName, animFn] = pickAnimation();
-  console.log(`[ascii] animation: ${animName}  (try ?anim=<name>)`);
-  console.log(`[ascii] available: ${Object.keys(ANIMATIONS).join(", ")}`);
+  let currentName = pickInitial();
+  console.log(
+    `[ascii] animation: ${currentName}  (available: ${Object.keys(ANIMATIONS).join(", ")})`
+  );
+
+  /* ---------- Tab bar ---------- */
+  const tabsEl = document.getElementById("anim-tabs");
+  function setAnim(name) {
+    if (!ANIMATIONS[name]) return;
+    currentName = name;
+    if (!tabsEl) return;
+    for (const btn of tabsEl.querySelectorAll("button")) {
+      btn.classList.toggle("active", btn.dataset.anim === name);
+    }
+  }
+  if (tabsEl) {
+    for (const name of Object.keys(ANIMATIONS)) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = name;
+      btn.dataset.anim = name;
+      btn.addEventListener("click", () => setAnim(name));
+      tabsEl.appendChild(btn);
+    }
+    setAnim(currentName);
+  }
 
   function frame() {
     t += 0.012;
+    const animFn = ANIMATIONS[currentName];
     let out = "";
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {

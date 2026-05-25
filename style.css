@@ -194,6 +194,50 @@ a:hover {
     color: var(--muted);
 }
 
+/* ---------- Animation picker tabs ---------- */
+.anim-tabs {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    gap: 2px;
+    padding: 4px;
+    max-width: calc(100vw - 32px);
+    overflow-x: auto;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    backdrop-filter: blur(8px) saturate(140%);
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
+    scrollbar-width: none;
+}
+.anim-tabs::-webkit-scrollbar {
+    display: none;
+}
+.anim-tabs button {
+    background: transparent;
+    border: 0;
+    color: var(--fg);
+    padding: 5px 11px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+    transition: background 0.12s ease;
+}
+.anim-tabs button:hover {
+    background: rgba(127, 127, 127, 0.15);
+}
+.anim-tabs button.active {
+    background: var(--fg-strong);
+    color: var(--bg);
+}
+
 /* ---------- Mobile ---------- */
 @media (max-width: 480px) {
     .page {
@@ -206,5 +250,9 @@ a:hover {
     .ascii-pane pre {
         font-size: 8px;
         line-height: 8px;
+    }
+    .anim-tabs {
+        bottom: 8px;
+        max-width: calc(100vw - 16px);
     }
 }
