@@ -85,11 +85,20 @@
     measureCell();
     const paneRect = asciiEl.parentElement.getBoundingClientRect();
     const w = paneRect.width || window.innerWidth;
-    const h = paneRect.height || window.innerHeight;
-    // Overshoot by one cell so the grid always extends past the viewport
-    // edge. The pane has overflow:hidden so extras are cropped.
-    cols = Math.max(40, Math.ceil(w / CELL_W) + 1);
-    rows = Math.max(20, Math.ceil(h / CELL_H) + 1);
+    // Use the largest plausible height: the pane box, innerHeight, and the
+    // screen's physical CSS height. On iOS Safari, getBoundingClientRect
+    // can report the visible-only height (excluding the bottom toolbar
+    // area), which leaves a strip un-rendered. screen.height gives the
+    // full hardware viewport so the grid always reaches behind the bar.
+    const h = Math.max(
+      paneRect.height || 0,
+      window.innerHeight || 0,
+      (typeof screen !== "undefined" && screen.height) || 0
+    );
+    // Generous overshoot so the grid always extends past the viewport
+    // edge. overflow:hidden on the pane crops the extras.
+    cols = Math.max(40, Math.ceil(w / CELL_W) + 2);
+    rows = Math.max(20, Math.ceil(h / CELL_H) + 4);
   }
   resize();
 

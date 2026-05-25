@@ -85,11 +85,15 @@ a:hover {
 /* ---------- ASCII background pane ---------- */
 .ascii-pane {
     position: fixed;
-    /* inset: 0 with viewport-fit=cover fills the entire layout viewport,
-       including behind the iOS address/tool bars. Combined with
-       overflow:hidden on the pane and a small grid overshoot in JS,
-       this guarantees the ASCII reaches all four edges of the screen. */
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* lvh = "large viewport height" — the full screen height regardless
+       of which Safari bars are currently visible. Using an explicit
+       height (not bottom:0) means the pane extends behind the bottom
+       toolbar on iOS, where bottom:0 would clamp to the top of the bar. */
+    height: 100vh;
+    height: 100lvh;
     overflow: hidden;
     pointer-events: none;
     z-index: 0;
