@@ -16,7 +16,7 @@
             content="#0E0E0E"
             media="(prefers-color-scheme: dark)"
         />
-        <title>Your Name</title>
+        <title>Max Xu</title>
         <link rel="stylesheet" href="style.css" />
     </head>
     <body>
@@ -24,34 +24,6 @@
         <aside class="ascii-pane" aria-hidden="true">
             <pre id="ascii"></pre>
         </aside>
-
-        <!-- SVG filter used by the glass card. Defs only -->
-        <svg width="0" height="0" style="position: absolute" aria-hidden="true">
-            <defs>
-                <filter
-                    id="glass-warp"
-                    x="-10%"
-                    y="-10%"
-                    width="120%"
-                    height="120%"
-                >
-                    <feTurbulence
-                        type="fractalNoise"
-                        baseFrequency="0.012 0.018"
-                        numOctaves="2"
-                        seed="3"
-                        result="noise"
-                    />
-                    <feDisplacementMap
-                        in="SourceGraphic"
-                        in2="noise"
-                        scale="8"
-                        xChannelSelector="R"
-                        yChannelSelector="G"
-                    />
-                </filter>
-            </defs>
-        </svg>
 
         <main class="page">
             <div class="container">
@@ -61,7 +33,7 @@
                 <!-- Identity -->
                 <h1 class="name">Max Xu</h1>
 
-                <!-- About / bio block. Replace each paragraph's text with your own. -->
+                <!-- About / bio block -->
                 <section class="block" aria-label="About">
                     <p class="text">
                         I'm an undergrad at Northwestern studying Computer
@@ -88,7 +60,7 @@
                         engineering and science.
                     </p>
 
-                    <!-- Selected work / writings list. Each paragraph is one bullet line. -->
+                    <!-- Selected work / writings list -->
                     <div class="writings" aria-label="Selected work">
                         <p class="text">
                             SAM-EM: Real-Time Segmentation for Automated Liquid
@@ -100,18 +72,7 @@
                                 >[PDF]</a
                             >
                         </p>
-                        <!--<p class="text">
-                            <a href="#">Another title</a>
-                        </p>
-                        <p class="text">
-                            <a href="#">A third item</a>
-                        </p>-->
                     </div>
-
-                    <!--<p class="text">
-                        Optional closing paragraph — sign-off, contact note,
-                        etc.
-                    </p>-->
                 </section>
 
                 <!-- Social / external links -->
@@ -130,7 +91,6 @@
                         rel="noopener noreferrer"
                         >GitHub</a
                     >
-                    <!--<a class="link" href="#" rel="noopener">Twitter</a>-->
                     <a class="link" href="mailto:maxxu123456@gmail.com"
                         >Email</a
                     >
@@ -142,7 +102,7 @@
             </div>
         </main>
 
-        <!-- Animation picker tab bar (populated by script.js) -->
+        <!-- Animation picker tab bar (populated by script.js; hidden on mobile) -->
         <nav
             class="anim-tabs"
             id="anim-tabs"

@@ -40,81 +40,51 @@
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
   /* ---------- ASCII background ----------
-     A registry of physics/science-themed scalar fields. Each function maps
-     (x, y, t, cols, rows) -> a value in [0, 1] which becomes a character on
-     the halftone ramp. One animation is picked at random on page load. */
+     Picks one scalar field at random on load and renders it as a halftone
+     ASCII grid. Each animation maps (x, y, t, cols, rows) -> [0, 1]. */
   const asciiEl = document.getElementById("ascii");
   if (!asciiEl) return;
 
   const RAMP = " .,:;-=+*o#%@";
 
-  // Measure the actual rendered cell size from the DOM so the ASCII grid
-  // matches whatever font-size/line-height the CSS applies (different on
-  // mobile vs desktop). Hard-coded values caused the <pre> to be shorter
-  // than the viewport on mobile.
+  // Cell size is measured from a sample span so the grid matches whatever
+  // font-size/line-height the CSS applies (mobile vs desktop differ).
   let CELL_W = 5, CELL_H = 9, AY = 1.8;
   function measureCell() {
     const sample = document.createElement("span");
     sample.style.cssText =
       "visibility:hidden;white-space:pre;position:absolute;font:inherit;";
-    sample.textContent = "0\n0\n0\n0\n0\n0\n0\n0\n0\n0"; // 10 lines × 1 char
+    sample.textContent = "0\n0\n0\n0\n0\n0\n0\n0\n0\n0";
     asciiEl.appendChild(sample);
     const r = sample.getBoundingClientRect();
     asciiEl.removeChild(sample);
     if (r.width > 0 && r.height > 0) {
-      CELL_W = r.width;            // one character wide
-      CELL_H = r.height / 10;      // one line tall (averaged over 10)
+      CELL_W = r.width;
+      CELL_H = r.height / 10;
       AY = CELL_H / CELL_W;
     }
   }
 
   let cols = 0, rows = 0, t = 0;
 
-  // Lock the page wrapper to the actual visible viewport height at load,
-  // exposed as --page-h in CSS. This bypasses Safari's svh/dvh quirks so
-  // the card centers in exactly the visible area — no scroll when it fits.
-  function setPageHeight() {
-    document.documentElement.style.setProperty(
-      "--page-h",
-      `${window.innerHeight}px`
-    );
-  }
-  setPageHeight();
-
   function resize() {
     measureCell();
     const paneRect = asciiEl.parentElement.getBoundingClientRect();
     const w = paneRect.width || window.innerWidth;
-    // Use the largest plausible height: the pane box, innerHeight, and the
-    // screen's physical CSS height. On iOS Safari, getBoundingClientRect
-    // can report the visible-only height (excluding the bottom toolbar
-    // area), which leaves a strip un-rendered. screen.height gives the
-    // full hardware viewport so the grid always reaches behind the bar.
-    const h = Math.max(
-      paneRect.height || 0,
-      window.innerHeight || 0,
-      (typeof screen !== "undefined" && screen.height) || 0
-    );
-    // Generous overshoot so the grid always extends past the viewport
-    // edge. overflow:hidden on the pane crops the extras.
-    cols = Math.max(40, Math.ceil(w / CELL_W) + 2);
-    rows = Math.max(20, Math.ceil(h / CELL_H) + 4);
+    const h = paneRect.height || window.innerHeight;
+    cols = Math.max(40, Math.ceil(w / CELL_W) + 1);
+    rows = Math.max(20, Math.ceil(h / CELL_H) + 1);
   }
   resize();
 
-  // Only react to genuine size changes — width deltas or orientation
-  // flips — not to iOS Safari's address bar collapsing (which produces a
-  // small height-only delta and would otherwise shift the pattern).
-  let lastW = window.innerWidth;
-  let lastH = window.innerHeight;
+  // Debounce so iOS Safari's address-bar collapse (which fires a small
+  // height-only resize) doesn't recompute the grid mid-scroll.
   let resizeT = null;
+  let lastW = window.innerWidth;
   window.addEventListener("resize", () => {
-    const w = window.innerWidth, h = window.innerHeight;
-    const widthChanged = Math.abs(w - lastW) > 1;
-    const bigHeightChange = Math.abs(h - lastH) > 150; // orientation flip
-    if (!widthChanged && !bigHeightChange) return;
-    lastW = w; lastH = h;
-    setPageHeight();
+    const w = window.innerWidth;
+    if (Math.abs(w - lastW) < 2) return; // ignore height-only changes
+    lastW = w;
     clearTimeout(resizeT);
     resizeT = setTimeout(resize, 180);
   });
