@@ -5,7 +5,7 @@
   const clockEl = document.getElementById("clock");
   const yearEl = document.getElementById("year");
 
-  const TZ = "America/Chicago";
+  const TZ = "America/Denver";
   const timeFmt = new Intl.DateTimeFormat("en-US", {
     timeZone: TZ,
     hour12: true,
